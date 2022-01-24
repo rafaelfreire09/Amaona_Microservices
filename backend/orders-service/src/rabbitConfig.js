@@ -20,6 +20,12 @@ amqp.connect(CONN_URL, function(error0, connection) {
         channel.assertQueue(queueName, {
           durable: false
         });
+
+        const queueName2 = 'EMAIL';
+    
+        channel.assertQueue(queueName2, {
+          durable: false
+        });
     });
 });
 
