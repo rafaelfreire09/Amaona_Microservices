@@ -79,7 +79,14 @@ export const payOrder = (order, paymentResult) => async (
     userSignin: { userInfo },
   } = getState();
   try {
-    const { data } = Axios.put(`http://localhost:5003/orders/${order._id}/pay`, paymentResult, {
+    console.log(order);
+    console.log(paymentResult);
+    const { data } = Axios.put(`http://localhost:5003/orders/${order._id}/pay`, {
+      id: 1,
+      status: "Pendente",
+      update_time: Date.now(),
+      email_add: userInfo.email
+    }, {
       headers: { Authorization: `Bearer ${userInfo.token}` },
     });
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data });
@@ -98,7 +105,7 @@ export const listOrderMine = () => async (dispatch, getState) => {
     userSignin: { userInfo },
   } = getState();
   try {
-    const { data } = await Axios.get('http://localhost:3000/orders/mine', {
+    const { data } = await Axios.get('http://localhost:5003/orders/mine', {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
@@ -119,7 +126,7 @@ export const listOrders = ({ seller = '' }) => async (dispatch, getState) => {
     userSignin: { userInfo },
   } = getState();
   try {
-    const { data } = await Axios.get(`http://localhost:3000/orders?seller=${seller}`, {
+    const { data } = await Axios.get(`http://localhost:5003/orders?seller=${seller}`, {
       headers: { Authorization: `Bearer ${userInfo.token}` },
     });
     console.log(data);
@@ -139,7 +146,7 @@ export const deleteOrder = (orderId) => async (dispatch, getState) => {
     userSignin: { userInfo },
   } = getState();
   try {
-    const { data } = Axios.delete(`http://localhost:3000/orders/${orderId}`, {
+    const { data } = Axios.delete(`http://localhost:5003/orders/${orderId}`, {
       headers: { Authorization: `Bearer ${userInfo.token}` },
     });
     dispatch({ type: ORDER_DELETE_SUCCESS, payload: data });
@@ -159,7 +166,7 @@ export const deliverOrder = (orderId) => async (dispatch, getState) => {
   } = getState();
   try {
     const { data } = Axios.put(
-      `http://localhost:3000/orders/${orderId}/deliver`,
+      `http://localhost:5003/orders/${orderId}/deliver`,
       {},
       {
         headers: { Authorization: `Bearer ${userInfo.token}` },

@@ -4,11 +4,13 @@ import dotenv from 'dotenv';
 import http from 'http';
 import orderRouter from './routers/orderRouter.js';
 import configRouter from './routers/configRouter.js';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(process.env.MONGODB_URL);

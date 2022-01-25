@@ -39,8 +39,8 @@ export default function HomeScreen() {
             {sellers.map((seller) => (
               <div key={seller._id}>
                 <Link to={`/seller/${seller._id}`}>
-                  <img src={seller.seller.logo} alt={seller.seller.name} />
-                  <p className="legend">{seller.seller.name}</p>
+                  {/* <img src={seller.seller.logo} alt={seller.seller.name} /> */}
+                  {/* <p className="legend">{seller.seller.name}</p> */}
                 </Link>
               </div>
             ))}
@@ -56,9 +56,10 @@ export default function HomeScreen() {
         <>
           {products.length === 0 && <MessageBox>No Product Found</MessageBox>}
           <div className="row center">
-            {products.map((product) => (
-              <Product key={product._id} product={product}></Product>
-            ))}
+            {products.map(product => {
+              console.log(products)
+              return (<Product key={product._id} product={product}></Product>)
+            })}
           </div>
         </>
       )}

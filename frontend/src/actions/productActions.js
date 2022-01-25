@@ -28,12 +28,13 @@ export const listProducts = ({ pageNumber = '', seller = '', name = '', category
     type: PRODUCT_LIST_REQUEST,
   });
   try {
-    const { data } = { data: [] }
-    // await 
-    // Axios.get(
-    //   `http://localhost:3000/products?pageNumber=${pageNumber}&seller=${seller}&name=${name}&category=${category}&min=${min}&max=${max}&rating=${rating}&order=${order}`
-    // );
-    dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data });
+    const response =
+      await
+        Axios.get(
+          `http://localhost:3000/products?pageNumber=${pageNumber}&seller=${seller}&name=${name}&category=${category}&min=${min}&max=${max}&rating=${rating}&order=${order}`
+        );
+    console.log(response);
+    dispatch({ type: PRODUCT_LIST_SUCCESS, payload: response.data });
   } catch (error) {
     dispatch({ type: PRODUCT_LIST_FAIL, payload: error.message });
   }

@@ -68,7 +68,7 @@ export default function OrderScreen(props) {
   }, [dispatch, orderId, sdkReady, successPay, successDeliver, order]);
 
   const successPaymentHandler = (paymentResult) => {
-    dispatch(payOrder(order, paymentResult));
+    dispatch(payOrder(order, null));
   };
   const deliverHandler = () => {
     dispatch(deliverOrder(order._id));
@@ -194,15 +194,15 @@ export default function OrderScreen(props) {
                       )}
                       {loadingPay && <LoadingBox></LoadingBox>}
 
-                      <PayPalButton
-                        amount={order.totalPrice}
-                        onSuccess={successPaymentHandler}
-                      ></PayPalButton>
+                      <button
+                        // amount={order.totalPrice}
+                        onClick={successPaymentHandler}
+                      > Pay </button>
                     </>
                   )}
                 </li>
               )}
-              {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+              {/* {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
                 <li>
                   {loadingDeliver && <LoadingBox></LoadingBox>}
                   {errorDeliver && (
@@ -216,7 +216,7 @@ export default function OrderScreen(props) {
                     Deliver Order
                   </button>
                 </li>
-              )}
+              )} */}
             </ul>
           </div>
         </div>

@@ -14,7 +14,18 @@ const userServiceProxy = httpProxy(process.env.USERS_API_URL);
 const productsServiceProxy = httpProxy(process.env.PRODUCTS_API_URL);
 const ordersServiceProxy = httpProxy(process.env.ORDERS_API_URL);
 
+console.log(process.env.ORDERS_API_URL);
+
 app.get('/', (req, res) => res.send('Hello Gateway API'));
+
+app.get('orders/:id', (req, res, next) => {
+    console.log(req.params.id)
+    ordersServiceProxy(req, res, next)
+});
+app.put('orders/:id/pay', (req, res, next) => ordersServiceProxy(req, res, next));
+app.put('orders/:id/status', (req, res, next) => ordersServiceProxy(req, res, next));
+app.put('orders/:id/deliver', (req, res, next) => ordersServiceProxy(req, res, next));
+app.delete('orders/:id', (req, res, next) => ordersServiceProxy(req, res, next));
 
 app.get('/users/summary', (req, res, next) => userServiceProxy(req, res, next));
 app.get('/users', (req, res, next) => userServiceProxy(req, res, next));
@@ -33,7 +44,10 @@ app.get('/products/categories', (req, res, next) => productsServiceProxy(req, re
 app.post('/products', (req, res, next) => productsServiceProxy(req, res, next));
 
 // Orders
-app.get('/orders', (req, res, next) => ordersServiceProxy(req, res, next));
+app.get('/orders', (req, res, next) => {
+    console.log(req.params.id)
+    ordersServiceProxy(req, res, next)
+});
 app.get('/orders/mine', (req, res, next) => ordersServiceProxy(req, res, next));
 app.post('/orders', (req, res, next) => ordersServiceProxy(req, res, next));
 
@@ -47,10 +61,6 @@ app.put('/products/:id', (req, res, next) => productsServiceProxy(req, res, next
 app.delete('/products/:id', (req, res, next) => productsServiceProxy(req, res, next));
 app.post('/:id/reviews', (req, res, next) => productsServiceProxy(req, res, next));
 
-app.get('orders/:id', (req, res, next) => ordersServiceProxy(req, res, next));
-app.put('orders/:id/pay', (req, res, next) => ordersServiceProxy(req, res, next));
-app.put('orders/:id/status', (req, res, next) => ordersServiceProxy(req, res, next));
-app.put('orders/:id/deliver', (req, res, next) => ordersServiceProxy(req, res, next));
-app.delete('orders/:id', (req, res, next) => ordersServiceProxy(req, res, next));
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port || 3000}!`));
