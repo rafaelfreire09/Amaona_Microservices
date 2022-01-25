@@ -1,9 +1,12 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import httpProxy from 'express-http-proxy';
+import cors from 'cors';
 dotenv.config();
 
 const app = express();
+
+app.use(cors())
 
 const port = 3000
 

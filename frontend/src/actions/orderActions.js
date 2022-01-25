@@ -98,7 +98,7 @@ export const listOrderMine = () => async (dispatch, getState) => {
     userSignin: { userInfo },
   } = getState();
   try {
-    const { data } = await Axios.get('http://localhost:5003/orders/mine', {
+    const { data } = await Axios.get('http://localhost:3000/orders/mine', {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
@@ -119,7 +119,7 @@ export const listOrders = ({ seller = '' }) => async (dispatch, getState) => {
     userSignin: { userInfo },
   } = getState();
   try {
-    const { data } = await Axios.get(`http://localhost:5003/orders?seller=${seller}`, {
+    const { data } = await Axios.get(`http://localhost:3000/orders?seller=${seller}`, {
       headers: { Authorization: `Bearer ${userInfo.token}` },
     });
     console.log(data);
@@ -139,7 +139,7 @@ export const deleteOrder = (orderId) => async (dispatch, getState) => {
     userSignin: { userInfo },
   } = getState();
   try {
-    const { data } = Axios.delete(`http://localhost:5003/orders/${orderId}`, {
+    const { data } = Axios.delete(`http://localhost:3000/orders/${orderId}`, {
       headers: { Authorization: `Bearer ${userInfo.token}` },
     });
     dispatch({ type: ORDER_DELETE_SUCCESS, payload: data });
@@ -159,7 +159,7 @@ export const deliverOrder = (orderId) => async (dispatch, getState) => {
   } = getState();
   try {
     const { data } = Axios.put(
-      `http://localhost:5003/orders/${orderId}/deliver`,
+      `http://localhost:3000/orders/${orderId}/deliver`,
       {},
       {
         headers: { Authorization: `Bearer ${userInfo.token}` },

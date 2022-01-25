@@ -8,7 +8,7 @@ import {
 } from '../constants/cartConstants';
 
 export const addToCart = (productId, qty) => async (dispatch, getState) => {
-  const { data } = await Axios.get(`http://localhost:5002/products/${productId}`);
+  const { data } = await Axios.get(`http://localhost:3000/products/${productId}`);
   const {
     cart: { cartItems },
   } = getState();
