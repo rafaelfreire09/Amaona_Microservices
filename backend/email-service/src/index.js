@@ -50,15 +50,16 @@ amqp.connect('amqp://localhost', function (error0, connection) {
         });
 
         channel.consume("EMAIL", (data) => {
-            console.log("Consuming EMAIL service");
+            // console.log("Consuming EMAIL service");
+            
             const { email, user, subject, text } = JSON.parse(data.content);
 
-            console.log(`Dados recebidos da Queue ${queueName}`);
+            // console.log(`Dados recebidos da Queue ${queueName}`);
 
-            console.log(`Email: ${email}`);
-            console.log(`User: ${user}`);
-            console.log(`Subject: ${subject}`);
-            console.log(`Text: ${text}`);
+            // console.log(`Email: ${email}`);
+            // console.log(`User: ${user}`);
+            // console.log(`Subject: ${subject}`);
+            // console.log(`Text: ${text}`);
 
             sendMail(email, user, subject, text);
 

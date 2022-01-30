@@ -19,9 +19,10 @@ amqp.connect('amqp://localhost', function (error0, connection) {
             });
 
             channel.consume("PAYMENT", async (data) => {
-                console.log("Consuming PAYMENT service");
+                // console.log("Consuming PAYMENT service");
 
                 const { paymentData } = JSON.parse(data.content);
+                
                 // Processa o pagamento
 
                 const status = {
@@ -34,13 +35,14 @@ amqp.connect('amqp://localhost', function (error0, connection) {
                     }
                 };
 
+                // console.log(paymentData);
+
                 // Envia o status para o Serviço de Pedido
-                console.log(paymentData);
                 await axios.put(`http://localhost:5003/orders/${paymentData.order._id}/status/${paymentData.order.user}`, { status });
+
                 // console.log(teste);
-                // channel.ack(data);
-            }
-            )
+                channel.ack(data);
+            })
         } catch (error) {
             console.log(error.message);
         }

@@ -8,6 +8,7 @@ import { generateToken, isAdmin, isAuth } from '../utils.js';
 
 const userRouter = express.Router();
 
+// Summary for Order Service
 userRouter.get('/summary', expressAsyncHandler(async (req, res) => {
     const users = await User.aggregate([
         {
@@ -21,6 +22,7 @@ userRouter.get('/summary', expressAsyncHandler(async (req, res) => {
     res.status(200).send({ users });
 }));
 
+// Get the user seller for Product Service
 userRouter.get('/seller', expressAsyncHandler(async (req, res) => {
     const sellerUser = await User.findOne({ isSeller: true });
 
@@ -33,6 +35,7 @@ userRouter.get('/seller', expressAsyncHandler(async (req, res) => {
     }
 }));
 
+// Seed Users
 userRouter.get('/seed', expressAsyncHandler(async (req, res) => {
     // await User.remove({});
     const createdUsers = await User.insertMany(data.users);
@@ -40,6 +43,7 @@ userRouter.get('/seed', expressAsyncHandler(async (req, res) => {
 })
 );
 
+// Register
 userRouter.post('/register', expressAsyncHandler(async (req, res) => {
     const user = new User({
         name: req.body.name,
@@ -59,6 +63,7 @@ userRouter.post('/register', expressAsyncHandler(async (req, res) => {
     });
 }));
 
+// Sign In
 userRouter.post('/signin', expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
 
@@ -80,10 +85,14 @@ userRouter.post('/signin', expressAsyncHandler(async (req, res) => {
     res.status(401).send({ message: 'Invalid email or password' });
 }));
 
+// Get User Details
 userRouter.get('/:id', expressAsyncHandler(async (req, res) => {
-    console.log(req.params.id)
+    // console.log(req.params.id)
+
     const user = await User.findById(req.params.id);
-    console.log(user)
+
+    // console.log(user)
+
     if (user) {
         res.send(user);
     } else {
@@ -91,8 +100,10 @@ userRouter.get('/:id', expressAsyncHandler(async (req, res) => {
     }
 }));
 
+// Update Profile
 userRouter.put('/profile', isAuth, expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
+
     if (user) {
         user.name = req.body.name || user.name;
         user.email = req.body.email || user.email;
@@ -135,11 +146,14 @@ userRouter.put('/:id', isAuth, isAdmin, expressAsyncHandler(async (req, res) => 
 
 userRouter.get('/', isAuth, isAdmin, expressAsyncHandler(async (req, res) => {
     const users = await User.find({});
+
     res.send(users);
 }));
 
+// Delete User
 userRouter.delete('/:id', isAuth, isAdmin, expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
+    
     if (user) {
         if (user.email === 'admin@example.com') {
             res.status(400).send({ message: 'Can Not Delete Admin User' });
@@ -153,6 +167,7 @@ userRouter.delete('/:id', isAuth, isAdmin, expressAsyncHandler(async (req, res) 
     }
 }));
 
+// Get top-sellers
 userRouter.get('/top-sellers', expressAsyncHandler(async (req, res) => {
     const topSellers = await User.find({ isSeller: true })
         .sort({ 'seller.rating': -1 })

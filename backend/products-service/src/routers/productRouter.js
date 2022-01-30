@@ -7,213 +7,217 @@ import { isAdmin, isAuth, isSellerOrAdmin } from '../utils.js';
 
 const productRouter = express.Router();
 
+// Summary for Order Service
 productRouter.get('/summary', expressAsyncHandler(async (req, res) => {
 
-  const productCategories = await Product.aggregate([
-    {
-      $group: {
-        _id: '$category',
-        count: { $sum: 1 },
-      },
-    },
-  ]);
+    const productCategories = await Product.aggregate([
+        {
+            $group: {
+                _id: '$category',
+                count: { $sum: 1 },
+            },
+        },
+    ]);
 
-  res.status(200).send({ productCategories });
+    res.status(200).send({ productCategories });
 
 }));
 
 // Generate Seed
 productRouter.get('/seed', expressAsyncHandler(async (req, res) => {
 
-  const response = await axios.get(`http://localhost:5001/users/seller`);
+    const response = await axios.get(`http://localhost:5001/users/seller`);
 
-  if (response.data.sellerUser) {
-    const seller = response.data.sellerUser;
+    if (response.data.sellerUser) {
+        const seller = response.data.sellerUser;
 
-    const products = data.products.map((product) => ({
-      ...product,
-      seller: seller._id,
-    }));
+        const products = data.products.map((product) => ({
+          ...product,
+          seller: seller._id,
+        }));
 
-    const createdProducts = await Product.insertMany(products);
+        const createdProducts = await Product.insertMany(products);
 
-    res.send({ createdProducts });
-  } else {
-    res.send(response.data);
-  }
+        res.send({ createdProducts });
+    } else {
+        res.send(response.data);
+    }
 
 }));
 
 // List Products
 productRouter.get('/', expressAsyncHandler(async (req, res) => {
-  console.log(req.query);
+    // console.log(req.query);
 
-  const pageSize = 3;
-  const page = Number(req.query.pageNumber) || 1;
-  const name = req.query.name || '';
-  const category = req.query.category || '';
-  const seller = req.query.seller || '';
-  const order = req.query.order || '';
-  const min =
-    req.query.min && Number(req.query.min) !== 0 ? Number(req.query.min) : 0;
-  const max =
-    req.query.max && Number(req.query.max) !== 0 ? Number(req.query.max) : 0;
-  const rating =
-    req.query.rating && Number(req.query.rating) !== 0
-      ? Number(req.query.rating)
-      : 0;
+    const pageSize = 3;
+    const page = Number(req.query.pageNumber) || 1;
+    const name = req.query.name || '';
+    const category = req.query.category || '';
+    const seller = req.query.seller || '';
+    const order = req.query.order || '';
+    const min =
+      req.query.min && Number(req.query.min) !== 0 ? Number(req.query.min) : 0;
+    const max =
+      req.query.max && Number(req.query.max) !== 0 ? Number(req.query.max) : 0;
+    const rating =
+      req.query.rating && Number(req.query.rating) !== 0
+        ? Number(req.query.rating)
+        : 0;
 
-  const nameFilter = name ? { name: { $regex: name, $options: 'i' } } : {};
-  const sellerFilter = seller ? { seller } : {};
-  const categoryFilter = category ? { category } : {};
-  const priceFilter = min && max ? { price: { $gte: min, $lte: max } } : {};
-  const ratingFilter = rating ? { rating: { $gte: rating } } : {};
-  const sortOrder =
-    order === 'lowest'
-      ? { price: 1 }
-      : order === 'highest'
-        ? { price: -1 }
-        : order === 'toprated'
-          ? { rating: -1 }
-          : { _id: -1 };
-  const count = await Product.count({
-    ...sellerFilter,
-    ...nameFilter,
-    ...categoryFilter,
-    ...priceFilter,
-    ...ratingFilter,
-  });
-  const products = await Product.find({
-    ...sellerFilter,
-    ...nameFilter,
-    ...categoryFilter,
-    ...priceFilter,
-    ...ratingFilter,
-  })
-    .populate('seller', 'seller.name seller.logo')
-    .sort(sortOrder)
-    .skip(pageSize * (page - 1))
-    .limit(pageSize);
+    const nameFilter = name ? { name: { $regex: name, $options: 'i' } } : {};
+    const sellerFilter = seller ? { seller } : {};
+    const categoryFilter = category ? { category } : {};
+    const priceFilter = min && max ? { price: { $gte: min, $lte: max } } : {};
+    const ratingFilter = rating ? { rating: { $gte: rating } } : {};
+    const sortOrder =
+      order === 'lowest'
+        ? { price: 1 }
+        : order === 'highest'
+          ? { price: -1 }
+          : order === 'toprated'
+            ? { rating: -1 }
+            : { _id: -1 };
+    const count = await Product.count({
+      ...sellerFilter,
+      ...nameFilter,
+      ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter,
+    });
+    const products = await Product.find({
+      ...sellerFilter,
+      ...nameFilter,
+      ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter,
+    })
+      .populate('seller', 'seller.name seller.logo')
+      .sort(sortOrder)
+      .skip(pageSize * (page - 1))
+      .limit(pageSize);
 
-  products.forEach(product => {
-    product.seller = {
-      _id: "61ee25a559b4c453771e832a",
-      seller: {
-        _id: "61ee25a559b4c453771e832a",
-        name: "Puma",
-        logo: "logo",
-        description: "Best seller",
-        rating: 4.5,
-        numReviews: 120
-      }
-    }
-  })
+    // products.forEach(product => {
+    //   product.seller = {
+    //     _id: "61eb416f243d66181377a2c3",
+    //     seller: {
+    //       _id: "61eb416f243d66181377a2c3",
+    //       name: "Puma",
+    //       logo: "logo",
+    //       description: "Best seller",
+    //       rating: 4.5,
+    //       numReviews: 120
+    //     }
+    //   }
+    // })
 
-  console.log(products);
+    // console.log(products);
 
-  res.send({ products, page, pages: Math.ceil(count / pageSize) });
+    res.send({ products, page, pages: Math.ceil(count / pageSize) });
 }));
 
 // List Products Categories
 productRouter.get('/categories', expressAsyncHandler(async (req, res) => {
-  const categories = await Product.find().distinct('category');
-  res.send(categories);
+    const categories = await Product.find().distinct('category');
+
+    res.send(categories);
 }));
 
 // Details Products
 productRouter.get('/:id', expressAsyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id).populate(
-    'seller',
-    'seller.name seller.logo seller.rating seller.numReviews'
-  );
-  if (product) {
-    res.send(product);
-  } else {
-    res.status(404).send({ message: 'Product Not Found' });
-  }
+    const product = await Product.findById(req.params.id).populate(
+        'seller',
+        'seller.name seller.logo seller.rating seller.numReviews'
+    );
+    if (product) {
+        res.send(product);
+    } else {
+        res.status(404).send({ message: 'Product Not Found' });
+    }
 }));
 
 // Create Product
 productRouter.post('/', isAuth, isSellerOrAdmin, expressAsyncHandler(async (req, res) => {
-  const product = new Product({
-    name: 'sample name ' + Date.now(),
-    seller: req.user._id,
-    image: '/images/p1.jpg',
-    price: 0,
-    category: 'sample category',
-    brand: 'sample brand',
-    countInStock: 0,
-    rating: 0,
-    numReviews: 0,
-    description: 'sample description',
-  });
+    const product = new Product({
+        name: 'sample name ' + Date.now(),
+        seller: req.user._id,
+        image: '/images/p1.jpg',
+        price: 0,
+        category: 'sample category',
+        brand: 'sample brand',
+        countInStock: 0,
+        rating: 0,
+        numReviews: 0,
+        description: 'sample description',
+    });
 
-  const createdProduct = await product.save();
+    const createdProduct = await product.save();
 
-  res.send({ message: 'Product Created', product: createdProduct });
+    res.send({ message: 'Product Created', product: createdProduct });
 }));
 
 // Update Product
 productRouter.put('/:id', isAuth, isSellerOrAdmin, expressAsyncHandler(async (req, res) => {
-  const productId = req.params.id;
-  const product = await Product.findById(productId);
+    const productId = req.params.id;
+    const product = await Product.findById(productId);
 
-  if (product) {
-    product.name = req.body.name;
-    product.price = req.body.price;
-    product.image = req.body.image;
-    product.category = req.body.category;
-    product.brand = req.body.brand;
-    product.countInStock = req.body.countInStock;
-    product.description = req.body.description;
-    const updatedProduct = await product.save();
-    res.send({ message: 'Product Updated', product: updatedProduct });
-  } else {
-    res.status(404).send({ message: 'Product Not Found' });
-  }
+    if (product) {
+        product.name = req.body.name;
+        product.price = req.body.price;
+        product.image = req.body.image;
+        product.category = req.body.category;
+        product.brand = req.body.brand;
+        product.countInStock = req.body.countInStock;
+        product.description = req.body.description;
+        const updatedProduct = await product.save();
+        res.send({ message: 'Product Updated', product: updatedProduct });
+    } else {
+        res.status(404).send({ message: 'Product Not Found' });
+    }
 }));
 
 // Delete Product
 productRouter.delete('/:id', isAuth, isAdmin, expressAsyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id);
 
-  if (product) {
-    const deleteProduct = await product.remove();
-    res.send({ message: 'Product Deleted', product: deleteProduct });
-  } else {
-    res.status(404).send({ message: 'Product Not Found' });
-  }
+    if (product) {
+      const deleteProduct = await product.remove();
+      res.send({ message: 'Product Deleted', product: deleteProduct });
+    } else {
+      res.status(404).send({ message: 'Product Not Found' });
+    }
 }));
 
 // Create Review
 productRouter.post('/:id/reviews', isAuth, expressAsyncHandler(async (req, res) => {
-  const productId = req.params.id;
-  const product = await Product.findById(productId);
+    const productId = req.params.id;
+    const product = await Product.findById(productId);
 
-  if (product) {
-    if (product.reviews.find((x) => x.name === req.user.name)) {
-      return res
-        .status(400)
-        .send({ message: 'You already submitted a review' });
+    if (product) {
+        if (product.reviews.find((x) => x.name === req.user.name)) {
+            return res
+              .status(400)
+              .send({ message: 'You already submitted a review' });
+        }
+
+        const review = {
+            name: req.user.name,
+            rating: Number(req.body.rating),
+            comment: req.body.comment,
+        };
+
+        product.reviews.push(review);
+        product.numReviews = product.reviews.length;
+        product.rating = product.reviews.reduce((a, c) => c.rating + a, 0) / product.reviews.length;
+
+        const updatedProduct = await product.save();
+
+        res.status(201).send({
+            message: 'Review Created',
+            review: updatedProduct.reviews[updatedProduct.reviews.length - 1],
+        });
+    } else {
+        res.status(404).send({ message: 'Product Not Found' });
     }
-    const review = {
-      name: req.user.name,
-      rating: Number(req.body.rating),
-      comment: req.body.comment,
-    };
-    product.reviews.push(review);
-    product.numReviews = product.reviews.length;
-    product.rating =
-      product.reviews.reduce((a, c) => c.rating + a, 0) /
-      product.reviews.length;
-    const updatedProduct = await product.save();
-    res.status(201).send({
-      message: 'Review Created',
-      review: updatedProduct.reviews[updatedProduct.reviews.length - 1],
-    });
-  } else {
-    res.status(404).send({ message: 'Product Not Found' });
-  }
 }));
 
 export default productRouter;

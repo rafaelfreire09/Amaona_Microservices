@@ -8,13 +8,13 @@ const app = express();
 
 app.use(cors())
 
-const port = 3000
+const port = 5000
 
 const userServiceProxy = httpProxy(process.env.USERS_API_URL);
 const productsServiceProxy = httpProxy(process.env.PRODUCTS_API_URL);
 const ordersServiceProxy = httpProxy(process.env.ORDERS_API_URL);
 
-console.log(process.env.ORDERS_API_URL);
+// console.log(process.env.ORDERS_API_URL);
 
 app.get('/', (req, res) => res.send('Hello Gateway API'));
 
@@ -63,4 +63,4 @@ app.post('/:id/reviews', (req, res, next) => productsServiceProxy(req, res, next
 
 
 
-app.listen(port, () => console.log(`Example app listening on port ${port || 3000}!`));
+app.listen(port, () => console.log(`Example app listening on port ${port || 5000}!`));
